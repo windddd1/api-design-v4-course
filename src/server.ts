@@ -1,22 +1,22 @@
-import express from 'express'
+import express,{ Express,RequestHandler } from 'express'
 import router from './router'
 import morgan from 'morgan'
 import cors from 'cors'
 import { protect } from './modules/auth'
 import { createNewUser, signin } from './handlers/user'
 
-const app = express()
+const app :Express = express()
 
-app.use(cors())
-app.use(morgan('dev'))
-app.use(express.json())
-app.use(express.urlencoded({extended: true}))
+app.use(cors() as RequestHandler)
+app.use(morgan('dev') as RequestHandler)
+app.use(express.json() as RequestHandler)
+app.use(express.urlencoded({extended: true}) as RequestHandler)
 
-app.get('/', (req, res, next) => {
-  setTimeout(() => {
-    next(new Error('hello'))
-  },1)
-})
+// app.get('/', (req, res, next) => {
+//   setTimeout(() => {
+//     next(new Error('hello'))
+//   },1)
+// })
 
 app.use('/api', protect, router)
 
