@@ -1,9 +1,9 @@
 import express,{ Express,RequestHandler } from 'express'
-import router from './router'
+import routes from './routes'
 import morgan from 'morgan'
 import cors from 'cors'
-import { protect } from './modules/auth'
-import { createNewUser, signin } from './handlers/user'
+import { protect } from './middlewares/auth.middleware'
+import { createNewUser, signin } from './controllers/user'
 
 const app :Express = express()
 
@@ -12,16 +12,14 @@ app.use(morgan('dev') as RequestHandler)
 app.use(express.json() as RequestHandler)
 app.use(express.urlencoded({extended: true}) as RequestHandler)
 
-// app.get('/', (req, res, next) => {
-//   setTimeout(() => {
-//     next(new Error('hello'))
-//   },1)
-// })
+// // app.use('/api/user', protect, userRoute)
+// app.use('/api/product', protect, productRoute)
 
-app.use('/api', protect, router)
 
-app.post('/user', createNewUser)
-app.post('/signin', signin)
+// app.post('/user', createNewUser)
+// app.post('/signin', signin)
+
+app.use('/v1', routes);
 
 app.use((err, req, res, next) => {
   console.log(err)

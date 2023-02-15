@@ -1,4 +1,4 @@
-import prisma from "../db"
+import prisma from "../config/db"
 
 // Get all
 export const getListPost = async (req, res) => {
@@ -38,7 +38,7 @@ export const createPost = async (req, res) => {
   // })
 
   // res.json({data: post})
-   res.json({})
+  res.json({})
 }
 
 
