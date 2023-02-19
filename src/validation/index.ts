@@ -17,6 +17,6 @@ export const schemas = {
     body: Joi.string().required(),
   }),
   idSchema: Joi.object().keys({
-    param: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
+    param: Joi.string().required()
 }),
 }

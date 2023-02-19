@@ -1,29 +1,38 @@
-import express,{ Express,RequestHandler } from 'express'
-import routes from './routes'
-import morgan from 'morgan'
-import cors from 'cors'
-import { protect } from './middlewares/auth.middleware'
-import { createNewUser, signin } from './controllers/user'
+import { Error } from "./types";
+import express, { Express, RequestHandler } from "express";
+import routes from "./routes";
+import morgan from "morgan";
+import cors from "cors";
+import { protect } from "./middlewares/auth.middleware";
 
-const app :Express = express()
+const app: Express = express();
 
-app.use(cors() as RequestHandler)
-app.use(morgan('dev') as RequestHandler)
-app.use(express.json() as RequestHandler)
-app.use(express.urlencoded({extended: true}) as RequestHandler)
+app.use(cors() as RequestHandler);
+app.use(morgan("dev") as RequestHandler);
+app.use(express.json() as RequestHandler);
+app.use(express.urlencoded({ extended: true }) as RequestHandler);
 
-// // app.use('/api/user', protect, userRoute)
-// app.use('/api/product', protect, productRoute)
+app.use("/v1", protect, routes);
 
+// Catch 404 Errors and forward them to error handler
+app.use((req, res, next) => {
+  const err = new Error("Not Found") as Error;
+  err.status = 404;
+  next(err);
+});
 
-// app.post('/user', createNewUser)
-// app.post('/signin', signin)
-
-app.use('/v1', routes);
-
+// Error handler function
 app.use((err, req, res, next) => {
-  console.log(err)
-  res.json({message: `had an error: ${err.message}`})
-})
+  const error = app.get("env") === "development" ? err : {};
+  const status = err.status || 500;
 
-export default app
+  // response to client
+  return res.status(status).json({
+    status: err.status,
+    error: {
+      message: error.message,
+    },
+  });
+});
+
+export default app;

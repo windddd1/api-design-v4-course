@@ -1,19 +1,37 @@
 import prisma from '../config/db'
 import { comparePasswords, createJWT, hashPassword } from '../middlewares/auth.middleware'
 
-export const createNewUser = async (req, res) => {
-  const user = await prisma.user.create({
-    data: {
-      username: req.body.username,
-      password: await hashPassword(req.body.password),
-      fullname:  req.body.fullname,
-      avatar: req.body.avatar,
-      birthday: req.body.birthday,
-    }
-  })
+export const getAllUser = async (req, res, next) => {
+  try {
+    const users = await prisma.user.findMany({
+      include: {
+        posts: true,
+      },
+    })
+  
+    res.json({ data: users });
+  } catch(e) {
+    next(e)
+  }
+}
 
-  const token = createJWT(user)
-  res.json({ token })
+export const createNewUser = async (req, res, next) => {
+  try {
+    const user = await prisma.user.create({
+      data: {
+        username: req.body.username,
+        password: await hashPassword(req.body.password),
+        fullname:  req.body.fullname,
+        avatar: req.body.avatar,
+        birthday: req.body.birthday,
+      }
+    })
+  
+    const token = createJWT(user)
+    res.json({ token })
+  } catch(e) {
+    next(e)
+  }
 }
 
 export const signin = async (req, res) => {
