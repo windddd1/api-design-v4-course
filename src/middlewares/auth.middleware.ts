@@ -27,7 +27,6 @@ export const protect = (req, res, next) => {
     res.json({message: 'not authorized'})
     return
   }
-
   const [, token] = bearer.split(' ')
 
   if (!token) {

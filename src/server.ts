@@ -12,7 +12,7 @@ app.use(morgan("dev") as RequestHandler);
 app.use(express.json() as RequestHandler);
 app.use(express.urlencoded({ extended: true }) as RequestHandler);
 
-app.use("/v1", protect, routes);
+app.use("/v1", routes);
 
 // Catch 404 Errors and forward them to error handler
 app.use((req, res, next) => {
@@ -25,7 +25,6 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   const error = app.get("env") === "development" ? err : {};
   const status = err.status || 500;
-
   // response to client
   return res.status(status).json({
     status: err.status,

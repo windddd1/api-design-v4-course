@@ -15,6 +15,42 @@ export const getAllUser = async (req, res, next) => {
   }
 }
 
+export const getMyAccount = async (req, res, next) => {
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: req.user.id
+      },
+      include: {
+        posts:{
+          select : {
+            
+          }
+        }
+      }
+    })
+    res.json({data: user})
+  } catch (e) {
+    next(e)
+  }
+}
+
+export const getDetailUser = async (req, res,next) => {
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: req.params
+      },
+      include: {
+        posts:true
+      }
+    })
+    res.json({data: user})
+  } catch (e) {
+    next(e)
+  }
+}
+
 export const createNewUser = async (req, res, next) => {
   try {
     const user = await prisma.user.create({

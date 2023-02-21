@@ -23,7 +23,16 @@ export const getDetailPost = async (req, res) => {
       id,
       userId: req.user.id,
     },
-  });
+    include: {
+      belongsTo: {
+        select: {
+          fullname: true,
+          avatar: true,
+          birthday: true
+        }
+      },
+    }
+  })
 
   res.json({ data: post });
 };

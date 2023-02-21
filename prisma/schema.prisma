@@ -19,7 +19,7 @@ model User {
   fullname  String
   avatar    String
   birthday  DateTime? @db.Timestamp(0)
-  posts     Post[]
+
 }
 
 model Post {
@@ -29,7 +29,7 @@ model Post {
   title     String   @db.VarChar(512)
   body      String
   userId    String
-  belongsTo User     @relation(fields: [userId], references: [id])
+
   // comments      Comments[]
   // @@unique([id, belongsToId])
 }
