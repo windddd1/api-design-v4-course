@@ -21,10 +21,10 @@ export const getDetailPost = async (req, res) => {
   const post = await prisma.post.findFirst({
     where: {
       id,
-      userId: req.user.id,
+      authorId: req.user.id,
     },
     include: {
-      belongsTo: {
+      author: {
         select: {
           fullname: true,
           avatar: true,
@@ -44,7 +44,7 @@ export const createPost = async (req, res, next) => {
       data: {
         title: req.body.title,
         body: req.body.body,
-        userId: req.user.id,
+        authorId: req.user.id,
       },
     });
     res.json({ data: post });

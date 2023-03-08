@@ -18,5 +18,8 @@ export const schemas = {
   }),
   idSchema: Joi.object().keys({
     param: Joi.string().required()
-}),
+  }),
+  commentSchema: Joi.object().keys({
+    content: Joi.string().max(2048).required()
+  })
 }

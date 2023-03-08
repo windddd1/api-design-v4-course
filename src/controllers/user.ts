@@ -63,14 +63,21 @@ export const createNewUser = async (req, res, next) => {
       }
     })
   
-    const token = createJWT(user)
+    const { token, publicKey} = createJWT(user)
+    await prisma.userSession({
+      data: {
+        userId: user.id,
+        publicKey,
+        refreshToken: ''
+      }
+    })
     res.json({ token })
   } catch(e) {
     next(e)
   }
 }
 
-export const signin = async (req, res) => {
+export const signIn = async (req, res) => {
   const user = await prisma.user.findUnique({
     where: {
       username: req.body.username
@@ -87,4 +94,18 @@ export const signin = async (req, res) => {
 
   const token = createJWT(user)
   res.json({ token })
+}
+
+export const getUserSession = async (userId) => {
+  try {
+    const userSession = await prisma.userSession.findUnique({
+      where: {
+        userId
+      }
+    })
+    return userSession
+  }
+  catch(err) {
+    return err
+  }
 }

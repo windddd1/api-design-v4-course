@@ -6,7 +6,7 @@ const router = Router()
 
 router.get('/', getAllUser)
 router.get('/myaccount', getMyAccount)
-router.get('/:id',validateParams(schemas.idSchema, 'id') getDetailUser)
-router.post('/', createNewUser)
+router.get('/:id',validateParam(schemas.idSchema, 'id'),getDetailUser)
+
 
 export default router
