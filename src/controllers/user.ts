@@ -1,5 +1,6 @@
 import prisma from '../config/db'
-import { comparePasswords, createJWT, hashPassword } from '../middlewares/auth.middleware'
+import jwt from 'jsonwebtoken'
+import { comparePasswords, hashPassword, setTokenCookie } from '../utils/authUtils'
 
 export const getAllUser = async (req, res, next) => {
   try {
@@ -63,16 +64,10 @@ export const createNewUser = async (req, res, next) => {
       }
     })
   
-    const { token, publicKey} = createJWT(user)
-    await prisma.userSession({
-      data: {
-        userId: user.id,
-        publicKey,
-        refreshToken: ''
-      }
-    })
-    res.json({ token })
+    setTokenCookie(res, user)
+    res.json({ success: true })
   } catch(e) {
+    console.log(e)
     next(e)
   }
 }
@@ -92,20 +87,39 @@ export const signIn = async (req, res) => {
     return
   }
 
-  const token = createJWT(user)
-  res.json({ token })
+  setTokenCookie(res, user)
+  res.json({ success: true })
 }
 
-export const getUserSession = async (userId) => {
-  try {
-    const userSession = await prisma.userSession.findUnique({
-      where: {
-        userId
-      }
-    })
-    return userSession
+export const signInLocal = async (req, res) => {
+  const user = {
+    id: '123123123123124123',
+    username: 'PhongTest'
   }
-  catch(err) {
-    return err
+
+  setTokenCookie(res, user)
+  res.json({ success: true })
+}
+
+export const refreshingToken = (req,res) => {
+  const csrfToken = req.get("X-CSRF-Token")
+  const refreshToken = req.get("Refresh-Token")
+
+  if (!csrfToken && !refreshToken) {
+    return res.status(401).json({message: 'Not authorized'})
   }
+
+  const user = jwt.verify(refreshToken, process.env.JWT_SECRET)
+  if(user.csrfToken !== csrfToken) {
+    return res.status(401).json({message: 'Not authorized'})
+  }
+
+  setTokenCookie(res, user)
+  res.json({ success: true })
+}
+
+export const logout = (req,res) => {
+  res.clearCookie('sid')
+  res.set("X-CSRF-Token", '')
+  return res.json({success: true})
 }

@@ -1,48 +1,25 @@
 import jwt from 'jsonwebtoken'
-import bcrypt from 'bcrypt'
-
-export const comparePasswords = (password, hash) => {
-  return bcrypt.compare(password, hash)
-}
-
-export const hashPassword = (password) => {
-  return bcrypt.hash(password, 5)
-}
-
-export const createJWT = (user) => {
-  const token = jwt.sign({
-      id: user.id,
-      username: user.username
-    }, 
-    process.env.JWT_SECRET
-  )
-  return token
-}
 
 export const protect = (req, res, next) => {
-  const bearer = req.headers.authorization
-
-  if (!bearer) {
+  const cookie = req.cookies.sid
+  const headerCSRFToken = req.get("X-CSRF-Token");
+  if (!cookie && !headerCSRFToken) {
     res.status(401)
-    res.json({message: 'not authorized'})
-    return
-  }
-  const [, token] = bearer.split(' ')
-
-  if (!token) {
-    res.status(401)
-    res.json({message: 'not valid token'})
+    res.json({message: 'Not authorized'})
     return
   }
 
   try {
-    const user = jwt.verify(token, process.env.JWT_SECRET)
+    const user = jwt.verify(cookie, process.env.JWT_SECRET)
+    if(user.csrfToken !== headerCSRFToken) {
+      res.status(401)
+      res.json({message: 'Not authorized'})
+      return
+    }
     req.user = user
     next()
   } catch (e) {
-    console.error(e)
-    res.status(401)
-    res.json({message: 'not valid token'})
-    return
+    return res.status(401).json({"error": true, "message": 'Unauthorized access.', detail: e });
   }
 }
+

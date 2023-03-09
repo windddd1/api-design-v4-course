@@ -3,10 +3,12 @@ import express, { Express, RequestHandler } from "express";
 import routes from "./routes";
 import morgan from "morgan";
 import cors from "cors";
+import cookieParser from 'cookie-parser'
 import { protect } from "./middlewares/auth.middleware";
 
 const app: Express = express();
 
+app.use(cookieParser());
 app.use(cors() as RequestHandler);
 app.use(morgan("dev") as RequestHandler);
 app.use(express.json() as RequestHandler);

@@ -1,11 +1,12 @@
 import {Router} from 'express'
-import { signIn } from '../controllers/user'
-import { createNewUser } from '../controllers/user'
-// import { validateBody, validateParam } from '../middlewares/validate.middleware'
-// import { schemas } from '../validation/index'
+import { logout, signIn, signInLocal, refreshingToken, createNewUser } from '../controllers/user'
+
 const router = Router()
 
 router.post('/signin', signIn)
+router.get('/signin-local', signInLocal)
 router.post('/signup', createNewUser)
+router.get('/refresh-token', refreshingToken)
+router.get('/logout', logout)
 
 export default router
